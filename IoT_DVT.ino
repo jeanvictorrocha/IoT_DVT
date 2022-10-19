@@ -8,7 +8,7 @@
 #include <HTTPClient.h>
 #include <HTTPUpdate.h>
 #include <WiFiClientSecure.h>
-#include "cert.h"
+#include "data\cert.h"
 
 //Constantes
 const byte      LED_PIN = 2;
