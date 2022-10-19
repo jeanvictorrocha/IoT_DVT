@@ -16,10 +16,10 @@ const byte      LED_PIN = 2;
 const char * ssid = "CORP-TLG";
 const char * password = "y.q<5sQWKj#E";
 
-String FirmwareVer = {"0.1"};
+String FirmwareVer = {"0.2"};
 
 #define URL_fw_Version "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/version.txt"
-#define URL_fw_Bin     "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/IoT_DVT.ino.bin"
+#define URL_fw_Bin     "https://github.com/jeanvictorrocha/IoT_DVT/raw/main/IoT_DVT.ino.bin"
 
 void connect_wifi();
 void firmwareUpdate();
