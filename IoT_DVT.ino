@@ -5,6 +5,29 @@
 
 // Bibliotecas ------------------------------------------
 #include <WiFi.h>
+#include <HTTPClient.h>
+#include <HTTPUpdate.h>
+#include <WiFiClientSecure.h>
+#include "cert.h"
+
+const char * ssid = "CORP-TLG";
+const char * password = "y.q<5sQWKj#E";
+
+String FirmwareVer = {"0.1"};
+
+#define URL_fw_Version "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/version.txt"
+#define URL_fw_Bin "https://raw.githubusercontent.com/programmer131/ESP8266_ESP32_SelfUpdate/master/esp32_ota/fw.bin"
+
+C:\Users\jean.victor\Meu Drive\SERVICO\Arduino IDE\IoT_DVT\build\esp32.esp32.esp32
+
+
+/********************************************************
+ * Jean Victor Rocha
+ * IoT DVT
+ */
+
+// Bibliotecas ------------------------------------------
+#include <WiFi.h>
 #include <HTTPUpdate.h>
 #include <SPIFFS.h>
 
