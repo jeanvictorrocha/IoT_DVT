@@ -11,7 +11,7 @@
 #include "cert.h"
 
 //Constantes
-const byte      LED_PIN                 = 2;
+const byte      LED_PIN = 2;
 
 const char * ssid = "CORP-TLG";
 const char * password = "y.q<5sQWKj#E";
