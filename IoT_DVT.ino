@@ -16,20 +16,19 @@ const byte      LED_PIN = 2;
 const char * ssid = "CORP-TLG";
 const char * password = "y.q<5sQWKj#E";
 
-String FirmwareVer = {"0.2"};
+String FirmwareVer = {"0.1"};
 
 #define URL_fw_Version "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/version.txt"
-#define URL_fw_Bin "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
+#define URL_fw_Bin     "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/IoT_DVT.ino.bin"
 
 void connect_wifi();
 void firmwareUpdate();
 int FirmwareVersionCheck();
 
-
 unsigned long previousMillis = 0; // will store last time LED was updated
 unsigned long previousMillis_2 = 0;
-const long interval = 60000;
-const long mini_interval = 1000;
+const long interval = 60000;//60 segundos
+const long mini_interval = 1000;//1 segundo
 void repeatedCall() {
   static int num=0;
   unsigned long currentMillis = millis();
@@ -74,19 +73,18 @@ void IRAM_ATTR isr() {
   button_boot.pressed = true;
 }
 
-
 void setup() {
   pinMode(button_boot.PIN, INPUT);
   attachInterrupt(button_boot.PIN, isr, RISING);
   Serial.begin(115200);
-  Serial.print("Active firmware version:");
+  Serial.print("Versão ativa do firmware:");
   Serial.println(FirmwareVer);
   pinMode(LED_PIN, OUTPUT);
   connect_wifi();
 }
 void loop() {
   if (button_boot.pressed) { //to connect wifi via Android esp touch app 
-    Serial.println("Firmware update Starting..");
+    Serial.println("Inicializando atualização do Firmware..");
     firmwareUpdate();
     button_boot.pressed = false;
   }
@@ -94,7 +92,7 @@ void loop() {
 }
 
 void connect_wifi() {
-  Serial.println("Waiting for WiFi");
+  Serial.println("Aguardando WiFi");
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -102,15 +100,18 @@ void connect_wifi() {
   }
 
   Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+  Serial.print("WiFi conectado - IP address: ");
   Serial.println(WiFi.localIP());
 }
 
 
 void firmwareUpdate(void) {
+  // Cria instância de Cliente seguro
   WiFiClientSecure client;
   client.setCACert(rootCACertificate);
+  // Instrui Cliente a ignorar assinatura do Servidor na conexao segura
+  //client.setInsecure();
+  
   httpUpdate.setLedPin(LED_PIN, LOW);
   t_httpUpdate_return ret = httpUpdate.update(client, URL_fw_Bin);
 
@@ -156,7 +157,7 @@ int FirmwareVersionCheck(void) {
       {
         payload = https.getString(); // save received version
       } else {
-        Serial.print("error in downloading version file:");
+        Serial.print("Erro no download do arquivo de versão:");
         Serial.println(httpCode);
       }
       https.end();
