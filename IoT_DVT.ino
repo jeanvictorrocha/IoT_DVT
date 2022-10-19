@@ -10,173 +10,173 @@
 #include <WiFiClientSecure.h>
 #include "cert.h"
 
+//Constantes
+const byte      LED_PIN                 = 2;
+
 const char * ssid = "CORP-TLG";
 const char * password = "y.q<5sQWKj#E";
 
-String FirmwareVer = {"0.1"};
+String FirmwareVer = {"0.2"};
 
 #define URL_fw_Version "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/version.txt"
-#define URL_fw_Bin "https://raw.githubusercontent.com/programmer131/ESP8266_ESP32_SelfUpdate/master/esp32_ota/fw.bin"
+#define URL_fw_Bin "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
 
-C:\Users\jean.victor\Meu Drive\SERVICO\Arduino IDE\IoT_DVT\build\esp32.esp32.esp32
+void connect_wifi();
+void firmwareUpdate();
+int FirmwareVersionCheck();
 
 
-/********************************************************
- * Jean Victor Rocha
- * IoT DVT
- */
-
-// Bibliotecas ------------------------------------------
-#include <WiFi.h>
-#include <HTTPUpdate.h>
-#include <SPIFFS.h>
-
-// Constantes -------------------------------------------
-// Wi-Fi
-const char*   SSID      = "CORP-TLG";
-const char*   PASSWORD  = "y.q<5sQWKj#E";
-
-//Blink
-// ESP32 não possui pino padrão de LED
-const byte      LED_PIN                 = 2;
-// ESP32 utilizam estado normal
-const byte      LED_ON                  = HIGH;
-const byte      LED_OFF                 = LOW;
-
-// Setup ------------------------------------------------
-void setup() {
-  Serial.begin(115200);
-  Serial.println("\nIniciando");
-
-  // Inicializa SPIFFS
-  if (SPIFFS.begin()) {
-    Serial.println("SPIFFS Ok");
-  } else {
-    Serial.println("SPIFFS Falha");
-  }
-
-  // Verifica / exibe arquivo
-  if (SPIFFS.exists("/Teste.txt")) {
-    File f = SPIFFS.open("/Teste.txt", "r");
-    if (f) {
-      Serial.println("Lendo arquivo:");
-      Serial.println(f.readString());
-      f.close();
+unsigned long previousMillis = 0; // will store last time LED was updated
+unsigned long previousMillis_2 = 0;
+const long interval = 60000;
+const long mini_interval = 1000;
+void repeatedCall() {
+  static int num=0;
+  unsigned long currentMillis = millis();
+  if ((currentMillis - previousMillis) >= interval) {
+    // save the last time you blinked the LED
+    previousMillis = currentMillis;
+    if (FirmwareVersionCheck()) {
+      firmwareUpdate();
     }
-  } else {
-    Serial.println("Arquivo não encontrado");
   }
-
-  // Conecta WiFi
-  WiFi.begin(SSID, PASSWORD);
-  Serial.println("\nConectando WiFi " + String(SSID));
-  while(WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(300);
+  if ((currentMillis - previousMillis_2) >= mini_interval) {
+    previousMillis_2 = currentMillis;
+    Serial.print("idle loop...");
+    Serial.print(num++);
+    Serial.print(" Active fw version:");
+    Serial.println(FirmwareVer);
+   if(WiFi.status() == WL_CONNECTED) 
+   {
+       Serial.println("wifi connected");
+   }
+   else
+   {
+    connect_wifi();
+   }
   }
-  Serial.println();
-  Serial.print("WiFi connected - IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // LED indicador de progresso
-  httpUpdate.setLedPin(2, HIGH);
-
-  // Callback - Progresso
-  Update.onProgress([](size_t progresso, size_t total) {
-    Serial.print(progresso * 100 / total);
-    Serial.print(" ");
-  });
-
-  // Não reiniciar automaticamente
-  httpUpdate.rebootOnUpdate(false);
-
-  // Cria instância de Cliente seguro
-  WiFiClientSecure client;
-  // Instrui Cliente a ignorar assinatura do Servidor na conexao segura
-  client.setInsecure();
-
-  // Atualização SPIFFS ---------------------------------
-  Serial.println("\n*** Atualização da SPIFFS ***");
-  for (byte b = 5; b > 0; b--) {
-    Serial.print(b);
-    Serial.println("... ");
-    delay(300);
-  }
-  // Encerra SPIFFS
-  SPIFFS.end();
-
-  t_httpUpdate_return resultado = httpUpdate.updateSpiffs(client, "//192.168.100.246/publico/TI/IOT/spiffs.bin");
-
-  // Verifica resultado
-  switch (resultado) {
-    case HTTP_UPDATE_FAILED: {
-      String s = httpUpdate.getLastErrorString();
-      Serial.println("\nFalha: " + s);
-    } break;
-    case HTTP_UPDATE_NO_UPDATES: {
-      Serial.println("\nNenhuma atualização disponível");
-    } break;
-    case HTTP_UPDATE_OK: {
-      Serial.println("\nSucesso");
-    } break;
-  }
-
-  // Inicializa SPIFFS
-  if (SPIFFS.begin()) {
-    Serial.println("SPIFFS Ok");
-  } else {
-    Serial.println("SPIFFS Falha");
-  }
-
-  // Verifica / exibe arquivo
-  if (SPIFFS.exists("/Teste.txt")) {
-    File f = SPIFFS.open("/Teste.txt", "r");
-    if (f) {
-      Serial.println("Lendo arquivo:");
-      Serial.println(f.readString());
-      f.close();
-    }
-  } else {
-    Serial.println("Arquivo não encontrado");
-  }
-
-  // Atualização Sketch ---------------------------------
-  Serial.println("\n*** Atualização do sketch ***");
-  for (byte b = 5; b > 0; b--) {
-    Serial.print(b);
-    Serial.println("... ");
-    delay(300);
-  }
-
-  // Efetua atualização do Sketch
-  resultado = httpUpdate.update(client, "//192.168.100.246/publico/TI/IOT/IoT_DVT.ino.bin");
-
-  // Verifica resultado
-  switch (resultado) {
-    case HTTP_UPDATE_FAILED: {
-      String s = httpUpdate.getLastErrorString();
-      Serial.println("\nFalha: " + s);
-    } break;
-    case HTTP_UPDATE_NO_UPDATES:
-      Serial.println("\nNenhuma atualização disponível");
-      break;
-    case HTTP_UPDATE_OK: {
-      Serial.println("\nSucesso, reiniciando...");
-      ESP.restart();
-    } break;
-  }
-
-  //Blink
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LED_OFF);
-  Serial.println("\n\nIniciando blink");
 }
 
-// Loop --------------------------------------------
+struct Button {
+  const uint8_t PIN;
+  uint32_t numberKeyPresses;
+  bool pressed;
+};
+
+Button button_boot = {
+  0,
+  0,
+  false
+};
+
+void IRAM_ATTR isr() {
+  button_boot.numberKeyPresses += 1;
+  button_boot.pressed = true;
+}
+
+
+void setup() {
+  pinMode(button_boot.PIN, INPUT);
+  attachInterrupt(button_boot.PIN, isr, RISING);
+  Serial.begin(115200);
+  Serial.print("Active firmware version:");
+  Serial.println(FirmwareVer);
+  pinMode(LED_PIN, OUTPUT);
+  connect_wifi();
+}
 void loop() {
-  //Blink
-  digitalWrite(LED_PIN, LED_ON);
-  delay(300);
-  digitalWrite(LED_PIN, LED_OFF);
-  delay(300);
+  if (button_boot.pressed) { //to connect wifi via Android esp touch app 
+    Serial.println("Firmware update Starting..");
+    firmwareUpdate();
+    button_boot.pressed = false;
+  }
+  repeatedCall();
+}
+
+void connect_wifi() {
+  Serial.println("Waiting for WiFi");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+
+void firmwareUpdate(void) {
+  WiFiClientSecure client;
+  client.setCACert(rootCACertificate);
+  httpUpdate.setLedPin(LED_PIN, LOW);
+  t_httpUpdate_return ret = httpUpdate.update(client, URL_fw_Bin);
+
+  switch (ret) {
+  case HTTP_UPDATE_FAILED:
+    Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
+    break;
+
+  case HTTP_UPDATE_NO_UPDATES:
+    Serial.println("HTTP_UPDATE_NO_UPDATES");
+    break;
+
+  case HTTP_UPDATE_OK:
+    Serial.println("HTTP_UPDATE_OK");
+    break;
+  }
+}
+int FirmwareVersionCheck(void) {
+  String payload;
+  int httpCode;
+  String fwurl = "";
+  fwurl += URL_fw_Version;
+  fwurl += "?";
+  fwurl += String(rand());
+  Serial.println(fwurl);
+  WiFiClientSecure * client = new WiFiClientSecure;
+
+  if (client) 
+  {
+    client -> setCACert(rootCACertificate);
+
+    // Add a scoping block for HTTPClient https to make sure it is destroyed before WiFiClientSecure *client is 
+    HTTPClient https;
+
+    if (https.begin( * client, fwurl)) 
+    { // HTTPS      
+      Serial.print("[HTTPS] GET...\n");
+      // start connection and send HTTP header
+      delay(100);
+      httpCode = https.GET();
+      delay(100);
+      if (httpCode == HTTP_CODE_OK) // if version received
+      {
+        payload = https.getString(); // save received version
+      } else {
+        Serial.print("error in downloading version file:");
+        Serial.println(httpCode);
+      }
+      https.end();
+    }
+    delete client;
+  }
+      
+  if (httpCode == HTTP_CODE_OK) // if version received
+  {
+    payload.trim();
+    if (payload.equals(FirmwareVer)) {
+      Serial.printf("\nDevice already on latest firmware version:%s\n", FirmwareVer);
+      return 0;
+    } 
+    else 
+    {
+      Serial.println(payload);
+      Serial.println("Novo firmware detectado");
+      return 1;
+    }
+  } 
+  return 0;  
 }
