@@ -18,8 +18,8 @@ const char * password = "y.q<5sQWKj#E";
 
 String FirmwareVer = {"0.1"};
 
-#define URL_fw_Version "https://github.com/jeanvictorrocha/IoT_DVT/blob/main/version.txt"
-#define URL_fw_Bin     "https://github.com/jeanvictorrocha/IoT_DVT/raw/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
+#define URL_fw_Version "https://raw.githubusercontent.com/jeanvictorrocha/IoT_DVT/main/version.txt"
+#define URL_fw_Bin     "https://raw.github.com/jeanvictorrocha/IoT_DVT/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
 
 void connect_wifi();
 void firmwareUpdate();
