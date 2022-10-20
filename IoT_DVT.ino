@@ -8,23 +8,27 @@
 #include <HTTPClient.h>
 #include <HTTPUpdate.h>
 #include <WiFiClientSecure.h>
-#include "data\cert.h"
+#include "data\cert.h"//Certificado Github
 
-//Constantes
+//Constantes ------------------------------------------
 const byte      LED_PIN = 2;
 
-const char * ssid = "CORP-TLG";
-const char * password = "y.q<5sQWKj#E";
+//const char * ssid = "CORP-TLG";
+//const char * password = "y.q<5sQWKj#E";
+const char * ssid = "GRU_Office";
+const char * password = "K4ilztqh03@#";
 
 String FirmwareVer = {"0.1"};
 
 #define URL_fw_Version "https://raw.githubusercontent.com/jeanvictorrocha/IoT_DVT/main/version.txt"
 #define URL_fw_Bin     "https://raw.githubusercontent.com/jeanvictorrocha/IoT_DVT/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
 
+//Funções ------------------------------------------
 void connect_wifi();
 void firmwareUpdate();
 int FirmwareVersionCheck();
 
+//###########################################
 unsigned long previousMillis = 0; // will store last time LED was updated
 unsigned long previousMillis_2 = 0;
 const long interval = 10000;//60000;//60 segundos
@@ -68,11 +72,13 @@ Button button_boot = {
   false
 };
 
+//###########################################
 void IRAM_ATTR isr() {
   button_boot.numberKeyPresses += 1;
   button_boot.pressed = true;
 }
 
+//###########################################
 void setup() {
   pinMode(button_boot.PIN, INPUT);
   attachInterrupt(button_boot.PIN, isr, RISING);
@@ -82,6 +88,8 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   connect_wifi();
 }
+
+//###########################################
 void loop() {
   if (button_boot.pressed) { //to connect wifi via Android esp touch app 
     Serial.println("Inicializando atualização do Firmware..");
@@ -91,6 +99,7 @@ void loop() {
   repeatedCall();
 }
 
+//###########################################
 void connect_wifi() {
   Serial.print("Aguardando WiFi");
   WiFi.begin(ssid, password);
@@ -104,31 +113,31 @@ void connect_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-
+//###########################################
 void firmwareUpdate(void) {
   // Cria instância de Cliente seguro
   WiFiClientSecure client;
   client.setCACert(rootCACertificate);
-  // Instrui Cliente a ignorar assinatura do Servidor na conexao segura
-  //client.setInsecure();
-  
+
   httpUpdate.setLedPin(LED_PIN, LOW);
   t_httpUpdate_return ret = httpUpdate.update(client, URL_fw_Bin);
 
   switch (ret) {
-  case HTTP_UPDATE_FAILED:
-    Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
-    break;
+    case HTTP_UPDATE_FAILED:
+      Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
+      break;
 
-  case HTTP_UPDATE_NO_UPDATES:
-    Serial.println("HTTP_UPDATE_NO_UPDATES");
-    break;
+    case HTTP_UPDATE_NO_UPDATES:
+      Serial.println("HTTP_UPDATE_NO_UPDATES");
+      break;
 
-  case HTTP_UPDATE_OK:
-    Serial.println("HTTP_UPDATE_OK");
-    break;
+    case HTTP_UPDATE_OK:
+      Serial.println("HTTP_UPDATE_OK");
+      break;
   }
 }
+
+//###########################################
 int FirmwareVersionCheck(void) {
   String payload;
   int httpCode;
@@ -169,7 +178,7 @@ int FirmwareVersionCheck(void) {
   {
     payload.trim();
     if (payload.equals(FirmwareVer)) {
-      Serial.printf("\nDispositivo já na versão de firmware mais recente:%s\n", FirmwareVer);
+      Serial.printf("\nDispositivo na versão de firmware mais recente: %s\n", FirmwareVer);
       return 0;
     } 
     else 
