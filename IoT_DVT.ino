@@ -1,7 +1,7 @@
 /********************************************************
  * Jean Victor Rocha
  * IoT DVT
- */
+ *******************************************************/
 
 // Bibliotecas ------------------------------------------
 #include <WiFi.h>
@@ -19,7 +19,7 @@ const char * password = "y.q<5sQWKj#E";
 String FirmwareVer = {"0.1"};
 
 #define URL_fw_Version "https://raw.githubusercontent.com/jeanvictorrocha/IoT_DVT/main/version.txt"
-#define URL_fw_Bin     "https://raw.github.com/jeanvictorrocha/IoT_DVT/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
+#define URL_fw_Bin     "https://raw.githubusercontent.com/jeanvictorrocha/IoT_DVT/main/build/esp32.esp32.esp32/IoT_DVT.ino.bin"
 
 void connect_wifi();
 void firmwareUpdate();
@@ -27,7 +27,7 @@ int FirmwareVersionCheck();
 
 unsigned long previousMillis = 0; // will store last time LED was updated
 unsigned long previousMillis_2 = 0;
-const long interval = 60000;//60 segundos
+const long interval = 10000;//60000;//60 segundos
 const long mini_interval = 1000;//1 segundo
 void repeatedCall() {
   static int num=0;
@@ -92,7 +92,7 @@ void loop() {
 }
 
 void connect_wifi() {
-  Serial.println("Aguardando WiFi");
+  Serial.print("Aguardando WiFi");
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -169,7 +169,7 @@ int FirmwareVersionCheck(void) {
   {
     payload.trim();
     if (payload.equals(FirmwareVer)) {
-      Serial.printf("\nDevice already on latest firmware version:%s\n", FirmwareVer);
+      Serial.printf("\nDispositivo já na versão de firmware mais recente:%s\n", FirmwareVer);
       return 0;
     } 
     else 

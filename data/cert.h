@@ -2,7 +2,15 @@
 
 #define CERT_H
 
-//DigiCert root certificate has expiry date of 10 Nov 2031
+/* ATENÇÃO
+Para emitir o certificado, pode ir ao site raiz: "www.github.com" e exportar o certificado, porem tem que
+verificar se o antivirus não esta sobrepondo o certificado, impedindo assim de exportar o original do site.
+
+Para contornar esse problema, pode exportar diretamente pelas configurações das propriedades da internet:
+em: Propriedades da internet, ir no menu conteudo, depois certificados e clicar em "certificados"
+Na aba de "autoridades de certificação RAIZ" buscar o certificado "DigiCert Global Root CA" (autenticação de cliente) 
+e exportar como "X.509 codificado na base 64 (*.cer)"
+*/
 const char * rootCACertificate = \
 "-----BEGIN CERTIFICATE-----\n" \
 "MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh\n" \
