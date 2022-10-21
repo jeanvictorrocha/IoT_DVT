@@ -67,6 +67,7 @@ void IRAM_ATTR isr() {
 //############################################################
 void setup() {
   pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
   pinMode(button_boot.PIN, INPUT);
   attachInterrupt(button_boot.PIN, isr, RISING);
   
@@ -95,7 +96,7 @@ void setup() {
   xTaskCreatePinnedToCore(
                     buttonPressed,  /* função que implementa a tarefa */
                     "buttonPressed",/* nome da tarefa */
-                    5000,              /* número de palavras a serem alocadas para uso com a pilha da tarefa */
+                    10000,              /* número de palavras a serem alocadas para uso com a pilha da tarefa */
                     NULL,              /* parâmetro de entrada para a tarefa (pode ser NULL) */
                     0,                 /* prioridade da tarefa (0 a N) */
                     NULL,              /* referência para a tarefa (pode ser NULL) */
@@ -104,7 +105,7 @@ void setup() {
   xTaskCreatePinnedToCore(
                     repeatedCall,  /* função que implementa a tarefa */
                     "repeatedCall",/* nome da tarefa */
-                    5000,              /* número de palavras a serem alocadas para uso com a pilha da tarefa */
+                    10000,              /* número de palavras a serem alocadas para uso com a pilha da tarefa */
                     NULL,              /* parâmetro de entrada para a tarefa (pode ser NULL) */
                     0,                 /* prioridade da tarefa (0 a N) */
                     NULL,              /* referência para a tarefa (pode ser NULL) */
