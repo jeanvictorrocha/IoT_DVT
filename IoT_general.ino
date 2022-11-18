@@ -25,7 +25,7 @@ String getDate() {
   return dayStr+"/"+monthStr+"/"+String(year);
 }
 
-//Funções diversas
+//Retorna status do endereço
 bool getStatusAddress(String keyAddress) {
   //Serial.print("[getStatusAddress] Start : ");
   //Serial.println(keyAddress);

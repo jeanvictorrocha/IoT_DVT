@@ -18,16 +18,16 @@ String FirmwareVer = {"0.2"};
 
 //Prototipos de funções externas
 extern void CheckI2c();
-extern void Interface();
-extern void AtualizaDataHora();
 extern void CheckWIFIConnected();
-extern void LoopFirmware();
+extern void connect_wifi();
+extern void setupNTP();
+extern void AtualizaDataHora();
+extern void Interface();
 extern int FirmwareVersionCheck();
 extern void firmwareUpdate();
+extern void LoopFirmware();
 extern String getDate();
 extern bool getStatusAddress();
-extern void setupNTP();
-extern void connect_wifi();
 
 //Definições ---------------------------------------------------------------------------------------------------
 #define LEAP_YEAR(Y)     ( (Y>0) && !(Y%4) && ( (Y%100) || !(Y%400) ) )

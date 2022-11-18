@@ -11,3 +11,15 @@ void connect_wifi() {
   Serial.print("[connect_wifi] WiFi conectado - IP address: ");
   Serial.println(WiFi.localIP());
 }
+
+void CheckWIFIConnected(void *arg){
+  while(true){
+    if(WiFi.status() == WL_CONNECTED) {
+      Serial.println("Wifi connected");
+    }
+    else {
+      connect_wifi();
+    }
+    delay(2000);
+  }
+}
