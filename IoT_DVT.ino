@@ -23,6 +23,7 @@ extern void connect_wifi();
 extern void setupNTP();
 extern void AtualizaDataHora();
 extern void Interface();
+extern void buttonPressed();
 extern int FirmwareVersionCheck();
 extern void firmwareUpdate();
 extern void LoopFirmware();
@@ -179,20 +180,6 @@ void setup() {
   //#################### CORE_1 ################################
 
   Serial.println("[Setup] FIM");
-}
-
-//Função responsavel por monitorar o botão Boot.
-void buttonPressed(void *arg){
-  while(true){
-    if (button_boot.pressed) {
-      Serial.println("[buttonPressed] Forçando busca de atualizações de Firmware..");
-      if (FirmwareVersionCheck()) {
-        firmwareUpdate();
-      }
-      button_boot.pressed = false;
-    }
-    delay(500);
-  }
 }
 
 void loop() {

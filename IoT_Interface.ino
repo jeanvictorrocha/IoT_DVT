@@ -29,3 +29,17 @@ void Interface(void *arg){
     delay(1000);
   }
 }
+
+//Função responsavel por monitorar o botão Boot.
+void buttonPressed(void *arg){
+  while(true){
+    if (button_boot.pressed) {
+      Serial.println("[buttonPressed] Forçando busca de atualizações de Firmware..");
+      if (FirmwareVersionCheck()) {
+        firmwareUpdate();
+      }
+      button_boot.pressed = false;
+    }
+    delay(500);
+  }
+}

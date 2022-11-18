@@ -15,7 +15,7 @@ void connect_wifi() {
 void CheckWIFIConnected(void *arg){
   while(true){
     if(WiFi.status() == WL_CONNECTED) {
-      Serial.println("Wifi connected");
+      //Serial.println("Wifi connected");
     }
     else {
       connect_wifi();
